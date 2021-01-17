@@ -1,0 +1,16 @@
+digraph {
+    node [shape = "box"]
+    esource [label = "event\nsource"]
+    asource [label = "audit\nsource"]
+    outj [label = "outer join"]
+    metrics [label = "compute\nmetrics"]
+    exception [label = "generate/retract\nexception"]
+    msink [label = "metric\nsink"]
+    esink [label = "exception\nsink"]
+    esource -> outj [label = "event", fontsize="8pt"]
+    asource -> outj [label = "audit", fontsize="8pt"]
+    outj -> metrics [label = "rec record", fontsize="8pt"]
+    outj -> exception [label = "rec record", fontsize="8pt"]
+    metrics -> msink [label = "metric", fontsize="8pt"]
+    exception -> esink [label = "exception", fontsize="8pt"]
+}
