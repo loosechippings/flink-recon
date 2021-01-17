@@ -104,4 +104,34 @@ public class OuterJoinFunctionTest {
         expected.add(new RecRecord(e2, a2));
         assertThat("second watermark", results, is(expected));
     }
+
+    @Test
+    public void testReturnsOneSidedRecForMissingEvent() throws Exception {
+        Audit a1 = new Audit("1", 1L);
+        testHarness.processElement2(a1, 1L);
+        testHarness.processBothWatermarks(new Watermark(1L));
+        List<RecRecord> results = testHarness.extractOutputValues();
+        List<RecRecord> expected = Collections.singletonList(new RecRecord(null, a1));
+        assertThat(results, is(expected));
+    }
+
+    @Test
+    public void testEventReportedMissingIsSubsequentlyFound() throws Exception {
+        Audit a1 = new Audit("1", 1L);
+        testHarness.processElement2(a1, 1L);
+        testHarness.processBothWatermarks(new Watermark(1L));
+        List<RecRecord> results = testHarness.extractOutputValues();
+        List<RecRecord> expected = Collections.singletonList(new RecRecord(null, a1));
+        assertThat("event is missing", results, is(expected));
+
+        Event e1 = new Event("1", 1L);
+        testHarness.processElement1(e1, 1L);
+        testHarness.processBothWatermarks(new Watermark(2L));
+        results = testHarness.extractOutputValues();
+        expected = new ArrayList<>();
+        expected.add(new RecRecord(null, a1));
+        expected.add(new RecRecord(e1, a1));
+        assertThat("late event matches", results, is(expected));
+    }
+
 }
