@@ -12,6 +12,14 @@ plugins {
     id 'application'
     // shadow plugin to produce fat JARs
     id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id "com.commercehub.gradle.plugin.avro" version "0.9.1"
+    id "idea"
+}
+
+repositories {
+    maven {
+        url "http://packages.confluent.io/maven/"
+    }
 }
 
 // artifact properties
@@ -70,11 +78,15 @@ dependencies {
     // connectors. These must be in the flinkShadowJar configuration!
     // --------------------------------------------------------------
     //flinkShadowJar "org.apache.flink:flink-connector-kafka_${scalaBinaryVersion}:${flinkVersion}"
+    flinkShadowJar "org.apache.flink:flink-connector-kafka_${scalaBinaryVersion}:${flinkVersion}"
+    flinkShadowJar "org.apache.flink:flink-avro:${flinkVersion}"
+    flinkShadowJar "org.apache.flink:flink-avro-confluent-registry:${flinkVersion}"
 
     compile "org.apache.logging.log4j:log4j-api:${log4jVersion}"
     compile "org.apache.logging.log4j:log4j-core:${log4jVersion}"
     compile "org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}"
     compile "org.slf4j:slf4j-log4j12:${slf4jVersion}"
+    compile "org.apache.avro:avro:1.10.1"
 
     // Add test dependencies here.
     testCompile "junit:junit:4.13.1"

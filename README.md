@@ -38,3 +38,8 @@ How to find the timestamp and reference in the event stream? Could either config
 How to deal with **dupes**? Anything upstream assuming it can do idempotent writes will cause dupes. Maybe need configurable ability to ignore dupes within the *m* time period. (And possibly to emit dupe metrics?)
 
 The join function needs to have a processing time timeout - if the audit or event topic stops for any reason (and therefore stops the watermark advancing) it needs to start generating metrics and exceptions after some configurable wall-clock time period. The [idle sources](https://ci.apache.org/projects/flink/flink-docs-stable/dev/event_timestamps_watermarks.html#dealing-with-idle-sources) feature will deal with idle partitions, not sure if it will stop the entire stream blocking progress. [This watermark assigner](https://github.com/aljoscha/flink/blob/6e4419e550caa0e5b162bc0d2ccc43f6b0b3860f/flink-streaming-java/src/main/java/org/apache/flink/streaming/api/functions/timestamps/ProcessingTimeTrailingBoundedOutOfOrdernessTimestampExtractor.java) has a processing time timeout - it is recommended by David Anderson on Stack.
+
+Pattern should recommend sending **heartbeat messages** both on event and inventory message streams.
+
+How to deal with complex cases like Settlement Monitoring where we have lots of events -> a single projection. We could include a list of message IDs in the projection. If the source has the projection (like SSENG has all obligations) we could use that as a source of the IDs.
+

@@ -11,6 +11,7 @@ public class Main {
     public static void main(String[] args) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         List<Integer> intlist = Arrays.asList(1, 2, 3, 4, 5);
+
         DataStream<Integer> intStream = env.fromCollection(intlist);
         intStream
                 .map(i -> i * 2)

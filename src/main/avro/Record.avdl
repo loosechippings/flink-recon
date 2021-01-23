@@ -1,0 +1,9 @@
+@namespace("loosechippings.domain.avro")
+protocol Record {
+
+  record Record {
+    string id;
+    string source;
+    long timestamp;
+  }
+}
