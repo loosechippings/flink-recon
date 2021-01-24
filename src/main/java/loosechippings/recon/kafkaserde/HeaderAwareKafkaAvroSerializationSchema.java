@@ -2,6 +2,7 @@ package loosechippings.recon.kafkaserde;
 
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import loosechippings.recon.SerializableFunction;
 import org.apache.avro.Schema;
 import org.apache.avro.io.BinaryEncoder;
 import org.apache.avro.io.EncoderFactory;
@@ -16,14 +17,13 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.function.Function;
 
 public class HeaderAwareKafkaAvroSerializationSchema<T> implements KafkaSerializationSchema<T> {
 
     private static final int ID_MAP_CAPACITY = 1000;
     private final Class<T> clazz;
     private final HeaderValueProvider<T> headerValueProvider;
-    private final Function<T, String> keyFunction;
+    private final SerializableFunction<T, String> keyFunction;
     private List<String> urls;
     private ConfluentSchemaRegistryCoder coder;
     private transient ByteArrayOutputStream outputStream;
@@ -32,7 +32,7 @@ public class HeaderAwareKafkaAvroSerializationSchema<T> implements KafkaSerializ
     private SpecificDatumWriter<T> datumWriter;
     private String topic;
 
-    public HeaderAwareKafkaAvroSerializationSchema(String topic, List<String> urls, Class<T> clazz, Function<T, String> keyFunction, HeaderValueProvider headerValueProvider) {
+    public HeaderAwareKafkaAvroSerializationSchema(String topic, List<String> urls, Class<T> clazz, SerializableFunction<T, String> keyFunction, HeaderValueProvider headerValueProvider) {
         this.urls = urls;
         this.clazz = clazz;
         this.topic = topic;
@@ -49,6 +49,8 @@ public class HeaderAwareKafkaAvroSerializationSchema<T> implements KafkaSerializ
             coder = new ConfluentSchemaRegistryCoder(topic, client);
             schema = SpecificData.get().getSchema(clazz);
             datumWriter = new SpecificDatumWriter<T>(clazz);
+            outputStream = new ByteArrayOutputStream();
+            encoder = EncoderFactory.get().directBinaryEncoder(outputStream, null);
         }
     }
 
@@ -60,10 +62,10 @@ public class HeaderAwareKafkaAvroSerializationSchema<T> implements KafkaSerializ
         } else {
             try {
                 outputStream.reset();
-                coder.writeSchema(null, outputStream);
+                coder.writeSchema(SpecificData.get().getSchema(clazz), outputStream);
                 datumWriter.write(element, encoder);
                 encoder.flush();
-                ProducerRecord<byte[], byte[]> producerRecord = new ProducerRecord<>(topic, keyFunction.apply(element).getBytes(), outputStream.toByteArray());
+                ProducerRecord<byte[], byte[]> producerRecord = new ProducerRecord<>(topic, null, outputStream.toByteArray());
                 headerValueProvider.getHeaders(element).forEach(producerRecord.headers()::add);
                 return producerRecord;
             } catch (IOException e) {

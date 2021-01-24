@@ -1,27 +1,29 @@
 package loosechippings.recon.kafkaserde;
 
+import loosechippings.recon.SerializableFunction;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.function.Function;
 
-public class HeaderValueProvider<T> {
+public class HeaderValueProvider<T> implements Serializable {
 
     private static final String SPEC_VERSION = "1.0";
-    private final Function<T, String> idFunction;
-    private final Function<T, String> sourceFunction;
-    private final Function<T, String> typeFunction;
-    private final Function<T, Long> timestampFunction;
-    private SimpleDateFormat timestampFormat;
+    private final SerializableFunction<T, String> idFunction;
+    private final SerializableFunction<T, String> sourceFunction;
+    private final SerializableFunction<T, String> typeFunction;
+    private final SerializableFunction<T, Long> timestampFunction;
+    private transient SimpleDateFormat timestampFormat;
 
     public HeaderValueProvider(
-            Function<T, String> idFunction,
-            Function<T, String> sourceFunction,
-            Function<T, String> typeFunction,
-            Function<T, Long> timestampFunction
+            SerializableFunction<T, String> idFunction,
+            SerializableFunction<T, String> sourceFunction,
+            SerializableFunction<T, String> typeFunction,
+            SerializableFunction<T, Long> timestampFunction
     ) {
         this.idFunction = idFunction;
         this.sourceFunction = sourceFunction;

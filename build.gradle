@@ -89,6 +89,9 @@ dependencies {
     compile "org.apache.avro:avro:1.10.1"
 
     // Add test dependencies here.
+    testImplementation("net.mguenther.kafka:kafka-junit:2.7.0") {
+        exclude group: "org.scala-lang"
+    }
     testCompile "junit:junit:4.13.1"
     testCompile "org.apache.flink:flink-test-utils_${scalaBinaryVersion}:${flinkVersion}"
     testCompile "org.apache.flink:flink-runtime_${scalaBinaryVersion}:${flinkVersion}:tests"

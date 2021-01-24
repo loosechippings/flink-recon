@@ -1,12 +1,14 @@
 package loosechippings.recon;
 
+import loosechippings.domain.avro.Record;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 
-public class Main {
+public class Producer {
 
     public static void main(String[] args) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -14,7 +16,13 @@ public class Main {
 
         DataStream<Integer> intStream = env.fromCollection(intlist);
         intStream
-                .map(i -> i * 2)
+                .map(i -> {
+                    return Record.newBuilder()
+                            .setId(i.toString())
+                            .setSource("source")
+                            .setTimestamp(Instant.now().toEpochMilli())
+                            .build();
+                })
                 .print();
         try {
             env.execute();
