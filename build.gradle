@@ -96,6 +96,7 @@ dependencies {
     testCompile "org.apache.flink:flink-test-utils_${scalaBinaryVersion}:${flinkVersion}"
     testCompile "org.apache.flink:flink-runtime_${scalaBinaryVersion}:${flinkVersion}:tests"
     testCompile "org.apache.flink:flink-streaming-java_${scalaBinaryVersion}:${flinkVersion}:tests"
+    testCompile "org.testcontainers:testcontainers:1.15.1"
 }
 
 // make compileOnly dependencies available for tests:

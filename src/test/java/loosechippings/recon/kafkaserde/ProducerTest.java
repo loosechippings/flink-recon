@@ -10,19 +10,39 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.header.internals.RecordHeader;
+import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import org.testcontainers.containers.DockerComposeContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 
+import java.io.File;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.StreamSupport;
 
+import static org.junit.Assert.assertTrue;
+
 public class ProducerTest {
+
+    @ClassRule
+    public static DockerComposeContainer environment = new DockerComposeContainer(new File("src/test/resources/docker-compose.yml"))
+            .withExposedService("broker", 9092)
+            .withExposedService("schema-registry", 8081);
+    private String brokerUrl;
+    private String schemaUrl;
+
+    @Before
+    public void setUp() {
+        brokerUrl = environment.getServiceHost("broker", 9092) + ":" + environment.getServicePort("broker", 9092);
+        schemaUrl = "http://" + environment.getServiceHost("schema-registry", 8081) + ":" + environment.getServicePort("schema-registry", 8081);
+    }
 
     @Test
     public void testProduceSingleRecord() throws Exception {
-        ExternalKafkaCluster cluster = ExternalKafkaCluster.at("localhost:9092");
+        ExternalKafkaCluster cluster = ExternalKafkaCluster.at(brokerUrl);
         if (cluster.exists("test-topic")) {
             cluster.deleteTopic("test-topic");
         }
@@ -35,12 +55,12 @@ public class ProducerTest {
                 Record::getTimestamp
             );
         Properties properties = new Properties();
-        properties.put("bootstrap.servers", "localhost:9092");
+        properties.put("bootstrap.servers", brokerUrl);
         FlinkKafkaProducer<Record> sink = new FlinkKafkaProducer<Record>(
                 "localhost:9091",
                 new HeaderAwareKafkaAvroSerializationSchema<Record>(
                         "test-topic",
-                        Collections.singletonList("http://localhost:8081"),
+                        Collections.singletonList(schemaUrl),
                         Record.class,
                         Record::getId,
                         headerValueProvider
