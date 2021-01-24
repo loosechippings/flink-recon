@@ -8,6 +8,7 @@ import org.apache.avro.io.BinaryEncoder;
 import org.apache.avro.io.EncoderFactory;
 import org.apache.avro.specific.SpecificData;
 import org.apache.avro.specific.SpecificDatumWriter;
+import org.apache.avro.specific.SpecificRecord;
 import org.apache.flink.api.common.serialization.SerializationSchema;
 import org.apache.flink.formats.avro.registry.confluent.ConfluentSchemaRegistryCoder;
 import org.apache.flink.streaming.connectors.kafka.KafkaSerializationSchema;
@@ -18,7 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-public class HeaderAwareKafkaAvroSerializationSchema<T> implements KafkaSerializationSchema<T> {
+public class HeaderAwareKafkaAvroSerializationSchema<T extends SpecificRecord> implements KafkaSerializationSchema<T> {
 
     private static final int ID_MAP_CAPACITY = 1000;
     private final Class<T> clazz;

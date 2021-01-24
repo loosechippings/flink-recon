@@ -123,3 +123,6 @@ shadowJar {
     configurations = [project.configurations.flinkShadowJar]
 }
 
+test {
+    testLogging.showStandardStreams = true
+}
