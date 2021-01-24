@@ -23,7 +23,9 @@ public class ProducerTest {
     @Test
     public void testProduceSingleRecord() throws Exception {
         ExternalKafkaCluster cluster = ExternalKafkaCluster.at("localhost:9092");
-        cluster.deleteTopic("test-topic");
+        if (cluster.exists("test-topic")) {
+            cluster.deleteTopic("test-topic");
+        }
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         HeaderValueProvider<Record> headerValueProvider = new HeaderValueProvider<>(
