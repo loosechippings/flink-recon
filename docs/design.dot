@@ -1,16 +1,26 @@
 digraph {
-    node [shape = "box"]
-    esource [label = "event\nsource"]
-    asource [label = "audit\nsource"]
-    outj [label = "outer join"]
-    metrics [label = "compute\nmetrics"]
-    exception [label = "generate/retract\nexception"]
-    msink [label = "metric\nsink"]
-    esink [label = "exception\nsink"]
-    esource -> outj [label = "event", fontsize="8pt"]
-    asource -> outj [label = "audit", fontsize="8pt"]
-    outj -> metrics [label = "rec record", fontsize="8pt"]
-    outj -> exception [label = "rec record", fontsize="8pt"]
-    metrics -> msink [label = "metric", fontsize="8pt"]
-    exception -> esink [label = "exception", fontsize="8pt"]
+    rankdir="LR"
+    node [shape = "box", fontsize="8pt", fontname="Helvetica"]
+    edge [fontsize="8pt", fontname="Helvetica"]
+    etopic [label = "event\ntopic", shape="cylinder"]
+    inventorytopic [label = "inventory\ntopic", shape="cylinder"]
+    calcactuals [label = "calculate\nactual\ninventory", style=filled]
+    isource [label = "expected\ninventory\ntopic", shape="cylinder"]
+    msink [label = "metric\ntopic", shape="cylinder"]
+    esink [label = "exception\ntopic", shape="cylinder"]
+    subgraph cluster_recjob {
+        style=filled
+        edge [fontsize="8pt", fontname="Helvetica"]
+        outj [label = "outer join\nexpected vs. actual"]
+        metrics [label = "compute\nmetrics"]
+        exception [label = "generate/retract\nexception"]
+        outj -> metrics [label = "rec record"]
+        outj -> exception [label = "rec record"]
+    }
+    etopic -> calcactuals
+    calcactuals -> inventorytopic [label = "actual inventory"]
+    isource -> inventorytopic [label = "expected inventory"]
+    inventorytopic -> outj
+    metrics -> msink [label = "metric"]
+    exception -> esink [label = "exception"]
 }
