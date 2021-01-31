@@ -27,6 +27,8 @@ So we have the following configurable time periods:
 
 ### Implementation thoughts
 
+Key control event stream on topic + source name + ID so that the join operator state is just 2 booleans.
+
 Ideally events on the audit topic should not be batched - each audit event should be a separate event. If we do this it means the windowing of the metrics, timeliness of exceptions raised etc. can be completely configured in the reconciliation code. I can't think of any reasons the audit topic should be batchy (other than maybe it makes the next point a little easier).
 
 Advantage of not batching reconciliation - streams can be partitioned by **topic** and **event ID** making the rec more horizontally scaleable that it would be if we reconciled abritrary batches of references.
