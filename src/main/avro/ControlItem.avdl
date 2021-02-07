@@ -1,0 +1,15 @@
+@namespace("loosechippings.domain.avro")
+protocol ControlItem {
+
+  enum ControlItemType {
+    ACTUAL, EXPECTED
+  }
+
+  record ControlItem {
+    ControlItemType controlItemType;
+    string eventId;
+    string eventSource;
+    long eventTimestamp;
+  }
+
+}

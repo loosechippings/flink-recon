@@ -1,0 +1,16 @@
+@namespace("loosechippings.domain.avro")
+protocol InventoryItem {
+
+  enum EventStoreType {
+    TOPIC, EXTERNAL
+  }
+
+  record InventoryItem {
+    string eventStore;
+    EventStoreType eventStoreType;
+    string eventId;
+    string eventSource;
+    long eventTimestamp;
+    long writeTimestamp;
+  }
+}

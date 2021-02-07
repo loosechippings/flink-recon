@@ -1,0 +1,54 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Control {
+    String controlName
+    List<EventStore> inputs
+    List<EventStore> outputs
+}
+
+class ControlItem {
+    String controlName
+    String eventSource
+    String eventID
+    Long eventTimestamp
+}
+
+class EventStore {
+    String storeName
+    StoreType storeType
+}
+
+enum StoreType {
+    TOPIC
+    EXTERNAL
+}
+
+class InventoryItem {
+    EventStore eventStore
+    String eventSource
+    String eventID
+    Long eventTimestamp
+}
+
+enum ResultType {
+    MATCH
+    MISSING_EXPECTED
+    MISSING_ACTUAL
+}
+
+class ControlResult {
+    String controlName
+    ResultType resultType
+    String eventSource
+    String eventID
+    Long eventTimestamp
+}
+
+EventStore -- StoreType
+Control --{ EventStore
+InventoryItem -- EventStore
+InventoryItem -- ControlItem
+ControlResult -- ResultType
+
+@enduml

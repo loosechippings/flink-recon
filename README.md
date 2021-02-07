@@ -21,6 +21,8 @@ So we have the following configurable time periods:
 
 ![design](docs/design.dot.png)
 
+![data model](docs/data_model.png)
+
 #### Outer join
 
 * 
